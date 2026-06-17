@@ -1,8 +1,8 @@
-import { defineConfig } from 'tsup'
+import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['cjs', 'esm'],
+  entry: ["src/index.ts"],
+  format: ["cjs", "esm"],
   dts: true,
   clean: true,
   splitting: false,
@@ -12,14 +12,14 @@ export default defineConfig({
   minifyIdentifiers: true,
   minifySyntax: true,
   sourcemap: false,
-  target: 'es2022',
+  target: "es2022",
   external: [],
-  outDir: 'dist',
+  outDir: "dist",
   env: {
-    NODE_ENV: 'production',
+    NODE_ENV: "production",
   },
   esbuildOptions(options) {
-    options.legalComments = 'none'
-    options.platform = 'neutral'
+    options.legalComments = "none";
+    options.platform = "neutral";
   },
-})
+});

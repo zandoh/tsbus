@@ -5,13 +5,13 @@
  */
 export interface Logger {
   /** Log error messages */
-  error(message: string, ...args: unknown[]): void
+  error(message: string, ...args: unknown[]): void;
   /** Log warning messages */
-  warn(message: string, ...args: unknown[]): void
+  warn(message: string, ...args: unknown[]): void;
   /** Log informational messages */
-  info(message: string, ...args: unknown[]): void
+  info(message: string, ...args: unknown[]): void;
   /** Log debug messages */
-  debug(message: string, ...args: unknown[]): void
+  debug(message: string, ...args: unknown[]): void;
 }
 
 /**
@@ -20,18 +20,18 @@ export interface Logger {
  */
 export const logger: Logger = {
   error(message: string, ...args: unknown[]): void {
-    console.error(message, ...args)
+    console.error(message, ...args);
   },
 
   warn(message: string, ...args: unknown[]): void {
-    console.warn(message, ...args)
+    console.warn(message, ...args);
   },
 
   info(message: string, ...args: unknown[]): void {
-    console.info(message, ...args)
+    console.info(message, ...args);
   },
 
   debug(message: string, ...args: unknown[]): void {
-    console.debug(message, ...args)
+    console.debug(message, ...args);
   },
-}
+};

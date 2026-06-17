@@ -21,46 +21,50 @@ pnpm add @zandoh/ts-eventbus
 ## Usage
 
 ```typescript
-import { createEventBus } from '@zandoh/ts-eventbus'
+import { createEventBus } from "@zandoh/ts-eventbus";
 
 // Define your event types
 interface AppEvents {
-  'user:login': { id: string; email: string }
-  'user:logout': { id: string }
-  'app:init': Record<string, never>
+  "user:login": { id: string; email: string };
+  "user:logout": { id: string };
+  "app:init": Record<string, never>;
 }
 
-const bus = createEventBus<AppEvents>()
+const bus = createEventBus<AppEvents>();
 
 // Subscribe to events
-bus.on('user:login', (payload) => {
-  console.log('User logged in:', payload.email)
-})
+bus.on("user:login", (payload) => {
+  console.log("User logged in:", payload.email);
+});
 
 // Subscribe with wildcards
-bus.onPattern('user:*', (payload) => {
-  console.log('User event:', payload)
-})
+bus.onPattern("user:*", (payload) => {
+  console.log("User event:", payload);
+});
 
 // Subscribe with priority (higher executes first)
-bus.on('user:login', (payload) => {
-  console.log('High priority handler')
-}, { priority: 10 })
+bus.on(
+  "user:login",
+  (payload) => {
+    console.log("High priority handler");
+  },
+  { priority: 10 },
+);
 
 // Emit events
-await bus.emit('user:login', {
-  id: '123',
-  email: 'user@example.com'
-})
+await bus.emit("user:login", {
+  id: "123",
+  email: "user@example.com",
+});
 
 // One-time listeners
-bus.once('app:init', () => {
-  console.log('App initialized')
-})
+bus.once("app:init", () => {
+  console.log("App initialized");
+});
 
 // Unsubscribe
-const unsubscribe = bus.on('user:logout', handler)
-unsubscribe()
+const unsubscribe = bus.on("user:logout", handler);
+unsubscribe();
 ```
 
 ## API Reference
@@ -71,8 +75,8 @@ Creates a new EventBus instance.
 
 ```typescript
 const bus = createEventBus<AppEvents>({
-  plugins: [loggingPlugin]
-})
+  plugins: [loggingPlugin],
+});
 ```
 
 ### `bus.on(event, handler, options?)`
@@ -80,15 +84,20 @@ const bus = createEventBus<AppEvents>({
 Subscribe to an event. Returns an unsubscribe function.
 
 **Options:**
+
 - `priority` - Execution priority (default: 0, higher values execute first)
 - `once` - Auto-remove after first execution (default: false)
 
 ```typescript
-const unsubscribe = bus.on('user:login', (payload) => {
-  console.log('Login:', payload.email)
-}, { priority: 10 })
+const unsubscribe = bus.on(
+  "user:login",
+  (payload) => {
+    console.log("Login:", payload.email);
+  },
+  { priority: 10 },
+);
 
-unsubscribe()
+unsubscribe();
 ```
 
 ### `bus.onPattern(pattern, handler, options?)`
@@ -96,9 +105,9 @@ unsubscribe()
 Subscribe to events matching a wildcard pattern. Supports `*` for matching any segment.
 
 ```typescript
-bus.onPattern('user:*', (payload) => {
-  console.log('User event:', payload)
-})
+bus.onPattern("user:*", (payload) => {
+  console.log("User event:", payload);
+});
 ```
 
 ### `bus.once(event, handler, options?)`
@@ -106,9 +115,9 @@ bus.onPattern('user:*', (payload) => {
 Subscribe to an event that automatically unsubscribes after first execution.
 
 ```typescript
-bus.once('app:init', () => {
-  console.log('Initialized')
-})
+bus.once("app:init", () => {
+  console.log("Initialized");
+});
 ```
 
 ### `bus.emit(event, payload)`
@@ -116,7 +125,7 @@ bus.once('app:init', () => {
 Emit an event to all matching listeners. Returns a Promise that resolves after all handlers complete.
 
 ```typescript
-await bus.emit('user:login', { id: '123', email: 'user@example.com' })
+await bus.emit("user:login", { id: "123", email: "user@example.com" });
 ```
 
 ### `bus.off(listenerId)`
@@ -124,8 +133,8 @@ await bus.emit('user:login', { id: '123', email: 'user@example.com' })
 Remove a specific listener by ID.
 
 ```typescript
-const unsubscribe = bus.on('user:login', handler)
-unsubscribe()
+const unsubscribe = bus.on("user:login", handler);
+unsubscribe();
 ```
 
 ### `bus.offAll(event?)`
@@ -133,8 +142,8 @@ unsubscribe()
 Remove all listeners for a specific event, or all listeners if no event is specified.
 
 ```typescript
-bus.offAll('user:login')  // Remove all user:login listeners
-bus.offAll()              // Remove all listeners
+bus.offAll("user:login"); // Remove all user:login listeners
+bus.offAll(); // Remove all listeners
 ```
 
 ### `bus.getListeners(event?)`
@@ -142,7 +151,7 @@ bus.offAll()              // Remove all listeners
 Get active listeners for an event or all events.
 
 ```typescript
-const listeners = bus.getListeners('user:login')
+const listeners = bus.getListeners("user:login");
 ```
 
 ## Coming Soon: Plugins
@@ -150,22 +159,23 @@ const listeners = bus.getListeners('user:login')
 Extend EventBus functionality with lifecycle hooks:
 
 ```typescript
-import type { Plugin } from '@zandoh/ts-eventbus'
+import type { Plugin } from "@zandoh/ts-eventbus";
 
 const loggingPlugin: Plugin<AppEvents> = {
-  name: 'logger',
-  onInit: () => console.log('EventBus initialized'),
+  name: "logger",
+  onInit: () => console.log("EventBus initialized"),
   onBeforeEmit: (event, payload) => console.log(`Emitting ${String(event)}`, payload),
   onAfterEmit: (event, payload, duration, handlerCount) => {
-    console.log(`${String(event)} completed in ${duration}ms (${handlerCount} handlers)`)
+    console.log(`${String(event)} completed in ${duration}ms (${handlerCount} handlers)`);
   },
-  onError: (event, payload, error) => console.error(`Error in ${String(event)}:`, error)
-}
+  onError: (event, payload, error) => console.error(`Error in ${String(event)}:`, error),
+};
 
-const bus = createEventBus<AppEvents>({ plugins: [loggingPlugin] })
+const bus = createEventBus<AppEvents>({ plugins: [loggingPlugin] });
 ```
 
 **Available hooks:**
+
 - `onInit()` - EventBus initialization
 - `onSubscribe(event, listenerId)` - Listener subscription
 - `onUnsubscribe(event, listenerId)` - Listener removal
@@ -181,15 +191,15 @@ Event maps provide full type safety for events and payloads:
 
 ```typescript
 interface AppEvents {
-  'user:login': { id: string; email: string }
-  'user:logout': { id: string }
+  "user:login": { id: string; email: string };
+  "user:logout": { id: string };
 }
 
-const bus = createEventBus<AppEvents>()
+const bus = createEventBus<AppEvents>();
 
-await bus.emit('user:login', { id: '123', email: 'user@example.com' })  // Valid
-await bus.emit('user:login', { id: 123 })                               // Type error
-await bus.emit('unknown:event', {})                                      // Type error
+await bus.emit("user:login", { id: "123", email: "user@example.com" }); // Valid
+await bus.emit("user:login", { id: 123 }); // Type error
+await bus.emit("unknown:event", {}); // Type error
 ```
 
 ## License

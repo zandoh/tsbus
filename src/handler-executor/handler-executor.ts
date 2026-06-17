@@ -1,5 +1,5 @@
-import type { EventMap } from '../eventbus/eventbus.types'
-import type { Listener } from '../listener-store/listener-store'
+import type { EventMap } from "../eventbus/eventbus.types";
+import type { Listener } from "../listener-store/listener-store";
 
 /**
  * Result of executing handlers for an event
@@ -8,9 +8,9 @@ import type { Listener } from '../listener-store/listener-store'
  */
 export interface HandlerExecutionResult {
   /** Array of listener IDs that should be removed after execution */
-  listenersToRemove: symbol[]
+  listenersToRemove: symbol[];
   /** Errors caught during handler execution */
-  errors: Array<{ error: unknown; listenerId: symbol }>
+  errors: Array<{ error: unknown; listenerId: symbol }>;
 }
 
 /**
@@ -30,7 +30,7 @@ export interface HandlerExecutor<TEventMap extends EventMap> {
     event: K,
     payload: TEventMap[K],
     listeners: Listener[],
-  ): Promise<HandlerExecutionResult>
+  ): Promise<HandlerExecutionResult>;
 }
 
 /**
@@ -54,36 +54,36 @@ export function createHandlerExecutor<TEventMap extends EventMap>(): HandlerExec
   ):
     | Promise<{ shouldRemove: boolean; duration: number; error?: unknown }>
     | { shouldRemove: boolean; duration: number; error?: unknown } {
-    const startTime = Date.now()
+    const startTime = Date.now();
 
     try {
-      const result = listener.handler(payload)
+      const result = listener.handler(payload);
 
       // Handle Promise return type
-      if (result && typeof result === 'object' && 'then' in result) {
+      if (result && typeof result === "object" && "then" in result) {
         return result.then(
           () => {
-            const duration = Date.now() - startTime
-            listener.executionCount++
-            listener.totalDuration += duration
-            return { shouldRemove: listener.once, duration }
+            const duration = Date.now() - startTime;
+            listener.executionCount++;
+            listener.totalDuration += duration;
+            return { shouldRemove: listener.once, duration };
           },
           (error) => {
-            const duration = Date.now() - startTime
-            return { shouldRemove: false, duration, error }
+            const duration = Date.now() - startTime;
+            return { shouldRemove: false, duration, error };
           },
-        )
+        );
       }
 
       // Synchronous handler
-      const duration = Date.now() - startTime
-      listener.executionCount++
-      listener.totalDuration += duration
+      const duration = Date.now() - startTime;
+      listener.executionCount++;
+      listener.totalDuration += duration;
 
-      return { shouldRemove: listener.once, duration }
+      return { shouldRemove: listener.once, duration };
     } catch (error) {
-      const duration = Date.now() - startTime
-      return { shouldRemove: false, duration, error }
+      const duration = Date.now() - startTime;
+      return { shouldRemove: false, duration, error };
     }
   }
 
@@ -93,25 +93,25 @@ export function createHandlerExecutor<TEventMap extends EventMap>(): HandlerExec
       payload: TEventMap[K],
       listeners: Listener[],
     ): Promise<HandlerExecutionResult> {
-      const listenersToRemove: symbol[] = []
-      const errors: Array<{ error: unknown; listenerId: symbol }> = []
+      const listenersToRemove: symbol[] = [];
+      const errors: Array<{ error: unknown; listenerId: symbol }> = [];
 
       // Execute handlers sequentially in priority order (FIFO within same priority)
       for (const listener of listeners) {
-        const result = executeHandler(event, payload, listener)
+        const result = executeHandler(event, payload, listener);
 
         // Only await if the result is a Promise
-        const executionResult = result instanceof Promise ? await result : result
+        const executionResult = result instanceof Promise ? await result : result;
 
         if (executionResult.shouldRemove) {
-          listenersToRemove.push(listener.id)
+          listenersToRemove.push(listener.id);
         }
         if (executionResult.error !== undefined) {
-          errors.push({ error: executionResult.error, listenerId: listener.id })
+          errors.push({ error: executionResult.error, listenerId: listener.id });
         }
       }
 
-      return { listenersToRemove, errors }
+      return { listenersToRemove, errors };
     },
-  }
+  };
 }

@@ -2,8 +2,8 @@ import type {
   ListenerHandler,
   ListenerMap,
   SubscribeOptions,
-} from '../listener-store/listener-store.types'
-import type { Plugin } from '../plugin-manager/plugin-manager.types'
+} from "../listener-store/listener-store.types";
+import type { Plugin } from "../plugin-manager/plugin-manager.types";
 
 /**
  * Type-safe mapping of event names to their payload types
@@ -15,7 +15,7 @@ import type { Plugin } from '../plugin-manager/plugin-manager.types'
  * }
  * ```
  */
-export type EventMap = Record<string, unknown>
+export type EventMap = Record<string, unknown>;
 
 /**
  * Configuration options for creating an EventBus
@@ -23,7 +23,7 @@ export type EventMap = Record<string, unknown>
  */
 export interface EventBusConfig<TEventMap extends EventMap = EventMap> {
   /** Plugins to extend EventBus functionality with lifecycle hooks */
-  plugins?: Plugin<TEventMap>[]
+  plugins?: Plugin<TEventMap>[];
 }
 
 /**
@@ -49,7 +49,7 @@ export interface EventBus<TEventMap extends EventMap = EventMap> {
     event: K,
     handler: ListenerHandler<TEventMap[K]>,
     options?: SubscribeOptions,
-  ): () => void
+  ): () => void;
 
   /**
    * Subscribe to an event pattern (supports wildcards like 'user:*')
@@ -68,7 +68,7 @@ export interface EventBus<TEventMap extends EventMap = EventMap> {
     pattern: string,
     handler: ListenerHandler<unknown>,
     options?: SubscribeOptions,
-  ): () => void
+  ): () => void;
 
   /**
    * Subscribe to an event once (automatically unsubscribes after first call)
@@ -86,8 +86,8 @@ export interface EventBus<TEventMap extends EventMap = EventMap> {
   once<K extends keyof TEventMap>(
     event: K,
     handler: ListenerHandler<TEventMap[K]>,
-    options?: Omit<SubscribeOptions, 'once'>,
-  ): () => void
+    options?: Omit<SubscribeOptions, "once">,
+  ): () => void;
 
   /**
    * Emit an event to all matching listeners
@@ -100,13 +100,13 @@ export interface EventBus<TEventMap extends EventMap = EventMap> {
    * await bus.emit('user:login', { userId: '123' })
    * ```
    */
-  emit<K extends keyof TEventMap>(event: K, payload: TEventMap[K]): Promise<void>
+  emit<K extends keyof TEventMap>(event: K, payload: TEventMap[K]): Promise<void>;
 
   /**
    * Remove a specific listener by its ID
    * @param listenerId - The symbol ID returned from subscription methods
    */
-  off(listenerId: symbol): void
+  off(listenerId: symbol): void;
 
   /**
    * Remove all listeners for an event (or all listeners if no event specified)
@@ -117,7 +117,7 @@ export interface EventBus<TEventMap extends EventMap = EventMap> {
    * bus.offAll() // Remove ALL listeners
    * ```
    */
-  offAll<K extends keyof TEventMap>(event?: K): void
+  offAll<K extends keyof TEventMap>(event?: K): void;
 
   /**
    * Get all active listeners (optionally filtered by event)
@@ -125,5 +125,5 @@ export interface EventBus<TEventMap extends EventMap = EventMap> {
    * @param event - Optional event name to filter listeners
    * @returns Map of patterns to their listener information
    */
-  getListeners(event?: string): ListenerMap
+  getListeners(event?: string): ListenerMap;
 }

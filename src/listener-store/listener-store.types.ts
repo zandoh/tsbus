@@ -4,32 +4,32 @@
  */
 export interface ListenerInfo {
   /** Unique listener identifier */
-  id: symbol
+  id: symbol;
   /** Execution priority (higher = earlier) */
-  priority: number
+  priority: number;
   /** One-time listener flag */
-  once: boolean
+  once: boolean;
   /** Pattern used for subscription */
-  pattern: string
+  pattern: string;
   /** Timestamp when listener was added */
-  addedAt: number
+  addedAt: number;
   /** Number of times this listener has been executed */
-  executionCount: number
+  executionCount: number;
   /** Average execution duration in milliseconds */
-  avgDuration: number
+  avgDuration: number;
 }
 
 /**
  * Map of event patterns to their registered listeners
  */
-export type ListenerMap = Map<string, ListenerInfo[]>
+export type ListenerMap = Map<string, ListenerInfo[]>;
 
 /**
  * Event handler function that processes event payloads
  * Supports both synchronous and asynchronous handlers
  * @template T - The type of the payload this handler receives
  */
-export type ListenerHandler<T = unknown> = (payload: T) => Promise<void> | void
+export type ListenerHandler<T = unknown> = (payload: T) => Promise<void> | void;
 
 /**
  * Options for subscribing to events
@@ -37,7 +37,7 @@ export type ListenerHandler<T = unknown> = (payload: T) => Promise<void> | void
  */
 export interface SubscribeOptions {
   /** Execution priority (higher = earlier, default: 0) */
-  priority?: number
+  priority?: number;
   /** If true, listener is removed after first execution */
-  once?: boolean
+  once?: boolean;
 }

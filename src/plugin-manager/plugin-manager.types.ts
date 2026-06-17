@@ -1,4 +1,4 @@
-import type { EventMap } from '../eventbus/eventbus.types'
+import type { EventMap } from "../eventbus/eventbus.types";
 
 /**
  * Plugin interface for extending EventBus functionality
@@ -19,16 +19,16 @@ import type { EventMap } from '../eventbus/eventbus.types'
  */
 export interface Plugin<TEventMap extends EventMap = EventMap> {
   /** Unique plugin identifier */
-  name: string
+  name: string;
 
   /** Called when the EventBus is initialized */
-  onInit?: () => void | Promise<void>
+  onInit?: () => void | Promise<void>;
 
   /** Called when a listener is subscribed */
-  onSubscribe?: <K extends keyof TEventMap>(event: K, listenerId: symbol) => void | Promise<void>
+  onSubscribe?: <K extends keyof TEventMap>(event: K, listenerId: symbol) => void | Promise<void>;
 
   /** Called when a listener is unsubscribed */
-  onUnsubscribe?: <K extends keyof TEventMap>(event: K, listenerId: symbol) => void | Promise<void>
+  onUnsubscribe?: <K extends keyof TEventMap>(event: K, listenerId: symbol) => void | Promise<void>;
 
   /**
    * Called before an event is emitted
@@ -37,7 +37,7 @@ export interface Plugin<TEventMap extends EventMap = EventMap> {
   onBeforeEmit?: <K extends keyof TEventMap>(
     event: K,
     payload: TEventMap[K],
-  ) => void | Promise<void>
+  ) => void | Promise<void>;
 
   /**
    * Called after an event is emitted
@@ -48,7 +48,7 @@ export interface Plugin<TEventMap extends EventMap = EventMap> {
     payload: TEventMap[K],
     duration: number,
     handlerCount: number,
-  ) => void | Promise<void>
+  ) => void | Promise<void>;
 
   /**
    * Called when an error occurs during handler execution
@@ -59,5 +59,5 @@ export interface Plugin<TEventMap extends EventMap = EventMap> {
     payload: TEventMap[K],
     error: unknown,
     handler?: symbol,
-  ) => void | Promise<void>
+  ) => void | Promise<void>;
 }

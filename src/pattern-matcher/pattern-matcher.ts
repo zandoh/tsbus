@@ -15,14 +15,14 @@ export interface PatternMatcher {
    * matcher.matches('*', 'any:event') // true
    * ```
    */
-  matches(pattern: string, event: string): boolean
+  matches(pattern: string, event: string): boolean;
 
   /**
    * Check if a pattern contains wildcard characters
    * @param pattern - Pattern to check
    * @returns True if the pattern contains *
    */
-  hasWildcard(pattern: string): boolean
+  hasWildcard(pattern: string): boolean;
 }
 
 /**
@@ -31,32 +31,32 @@ export interface PatternMatcher {
  * @returns PatternMatcher instance
  */
 export function createPatternMatcher(): PatternMatcher {
-  const patternCache = new Map<string, RegExp>()
+  const patternCache = new Map<string, RegExp>();
 
   return {
     hasWildcard(pattern: string): boolean {
-      return pattern.includes('*')
+      return pattern.includes("*");
     },
 
     matches(pattern: string, event: string): boolean {
-      if (pattern === '*') {
-        return true
+      if (pattern === "*") {
+        return true;
       }
 
       if (pattern === event) {
-        return true
+        return true;
       }
 
-      let regex = patternCache.get(pattern)
+      let regex = patternCache.get(pattern);
 
       if (!regex) {
         // Convert pattern to regex (e.g., "user:*" -> /^user:.*$/)
-        const regexPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')
-        regex = new RegExp(`^${regexPattern}$`)
-        patternCache.set(pattern, regex)
+        const regexPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*");
+        regex = new RegExp(`^${regexPattern}$`);
+        patternCache.set(pattern, regex);
       }
 
-      return regex.test(event)
+      return regex.test(event);
     },
-  }
+  };
 }

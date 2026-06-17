@@ -1,6 +1,6 @@
-import type { EventMap } from '../eventbus/eventbus.types'
-import { logger } from '../logger/logger'
-import type { Plugin } from './plugin-manager.types'
+import type { EventMap } from "../eventbus/eventbus.types";
+import { logger } from "../logger/logger";
+import type { Plugin } from "./plugin-manager.types";
 
 /**
  * Manages plugin execution with error handling
@@ -14,7 +14,7 @@ export interface PluginManager<TEventMap extends EventMap> {
    * @param hookName - The name of the hook to call
    * @param args - Arguments to pass to the hook
    */
-  callHook<Args extends unknown[]>(hookName: keyof Plugin<TEventMap>, ...args: Args): Promise<void>
+  callHook<Args extends unknown[]>(hookName: keyof Plugin<TEventMap>, ...args: Args): Promise<void>;
 }
 
 /**
@@ -35,21 +35,21 @@ export function createPluginManager<TEventMap extends EventMap>(
     ): Promise<void> {
       const hookPromises = plugins
         .map((plugin) => {
-          const hook = plugin[hookName]
+          const hook = plugin[hookName];
           if (hook) {
             try {
-              return (hook as (...args: unknown[]) => void | Promise<void>)(...args)
+              return (hook as (...args: unknown[]) => void | Promise<void>)(...args);
             } catch (error) {
-              logger.error(`Error in plugin "${plugin.name}" hook "${String(hookName)}":`, error)
-              return undefined
+              logger.error(`Error in plugin "${plugin.name}" hook "${String(hookName)}":`, error);
+              return undefined;
             }
           }
-          return undefined
+          return undefined;
         })
-        .filter((p): p is Promise<void> | void => p !== undefined)
+        .filter((p): p is Promise<void> | void => p !== undefined);
 
       // Wait for all plugin hooks to complete
-      await Promise.all(hookPromises)
+      await Promise.all(hookPromises);
     },
-  }
+  };
 }
