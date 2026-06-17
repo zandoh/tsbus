@@ -4,10 +4,13 @@ import type { Listener } from '../listener-store/listener-store'
 /**
  * Result of executing handlers for an event
  * Contains IDs of listeners that should be removed (e.g., once listeners)
+ * and any errors that occurred during execution
  */
 export interface HandlerExecutionResult {
   /** Array of listener IDs that should be removed after execution */
   listenersToRemove: symbol[]
+  /** Errors caught during handler execution */
+  errors: Array<{ error: unknown; listenerId: symbol }>
 }
 
 /**
@@ -49,8 +52,8 @@ export function createHandlerExecutor<TEventMap extends EventMap>(): HandlerExec
     payload: TEventMap[K],
     listener: Listener,
   ):
-    | Promise<{ shouldRemove: boolean; duration: number }>
-    | { shouldRemove: boolean; duration: number } {
+    | Promise<{ shouldRemove: boolean; duration: number; error?: unknown }>
+    | { shouldRemove: boolean; duration: number; error?: unknown } {
     const startTime = Date.now()
 
     try {
@@ -65,9 +68,9 @@ export function createHandlerExecutor<TEventMap extends EventMap>(): HandlerExec
             listener.totalDuration += duration
             return { shouldRemove: listener.once, duration }
           },
-          (_error) => {
+          (error) => {
             const duration = Date.now() - startTime
-            return { shouldRemove: false, duration }
+            return { shouldRemove: false, duration, error }
           },
         )
       }
@@ -78,9 +81,9 @@ export function createHandlerExecutor<TEventMap extends EventMap>(): HandlerExec
       listener.totalDuration += duration
 
       return { shouldRemove: listener.once, duration }
-    } catch (_error) {
+    } catch (error) {
       const duration = Date.now() - startTime
-      return { shouldRemove: false, duration }
+      return { shouldRemove: false, duration, error }
     }
   }
 
@@ -91,6 +94,7 @@ export function createHandlerExecutor<TEventMap extends EventMap>(): HandlerExec
       listeners: Listener[],
     ): Promise<HandlerExecutionResult> {
       const listenersToRemove: symbol[] = []
+      const errors: Array<{ error: unknown; listenerId: symbol }> = []
 
       // Execute handlers sequentially in priority order (FIFO within same priority)
       for (const listener of listeners) {
@@ -102,9 +106,12 @@ export function createHandlerExecutor<TEventMap extends EventMap>(): HandlerExec
         if (executionResult.shouldRemove) {
           listenersToRemove.push(listener.id)
         }
+        if (executionResult.error !== undefined) {
+          errors.push({ error: executionResult.error, listenerId: listener.id })
+        }
       }
 
-      return { listenersToRemove }
+      return { listenersToRemove, errors }
     },
   }
 }

@@ -6,3 +6,4 @@ export type {
   ListenerMap,
   SubscribeOptions,
 } from './listener-store/listener-store.types'
+export type { Plugin } from './plugin-manager/plugin-manager.types'

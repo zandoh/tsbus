@@ -3,6 +3,7 @@ import type {
   ListenerMap,
   SubscribeOptions,
 } from '../listener-store/listener-store.types'
+import type { Plugin } from '../plugin-manager/plugin-manager.types'
 
 /**
  * Type-safe mapping of event names to their payload types
@@ -20,7 +21,10 @@ export type EventMap = Record<string, unknown>
  * Configuration options for creating an EventBus
  * @template TEventMap - The event map defining available events and their payloads
  */
-export type EventBusConfig<_TEventMap extends EventMap = EventMap> = Record<string, never>
+export interface EventBusConfig<TEventMap extends EventMap = EventMap> {
+  /** Plugins to extend EventBus functionality with lifecycle hooks */
+  plugins?: Plugin<TEventMap>[]
+}
 
 /**
  * Type-safe event bus for publishing and subscribing to events

@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import type { Plugin } from '../plugin-manager/plugin-manager.types'
 import { createEventBus } from './eventbus'
 
 interface TestEvents extends Record<string, unknown> {
@@ -294,6 +295,168 @@ describe('EventBus', () => {
       await bus.emit('test:event', { message: 'test' })
 
       expect(order).toEqual([10, 5, 1])
+    })
+  })
+
+  describe('plugins', () => {
+    it('should call onInit when EventBus is created', async () => {
+      const onInit = vi.fn()
+      const plugin: Plugin<TestEvents> = { name: 'test', onInit }
+
+      createEventBus<TestEvents>({ plugins: [plugin] })
+
+      // onInit fires asynchronously, give it a tick
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(onInit).toHaveBeenCalledOnce()
+    })
+
+    it('should call onSubscribe when a listener is added', async () => {
+      const onSubscribe = vi.fn()
+      const plugin: Plugin<TestEvents> = { name: 'test', onSubscribe }
+
+      const bus = createEventBus<TestEvents>({ plugins: [plugin] })
+      bus.on('test:event', () => {})
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(onSubscribe).toHaveBeenCalledOnce()
+      expect(onSubscribe).toHaveBeenCalledWith('test:event', expect.any(Symbol))
+    })
+
+    it('should call onUnsubscribe when a listener is removed via unsubscribe', async () => {
+      const onUnsubscribe = vi.fn()
+      const plugin: Plugin<TestEvents> = { name: 'test', onUnsubscribe }
+
+      const bus = createEventBus<TestEvents>({ plugins: [plugin] })
+      const unsub = bus.on('test:event', () => {})
+      unsub()
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(onUnsubscribe).toHaveBeenCalledOnce()
+      expect(onUnsubscribe).toHaveBeenCalledWith('test:event', expect.any(Symbol))
+    })
+
+    it('should call onUnsubscribe when a listener is removed via off', async () => {
+      const onUnsubscribe = vi.fn()
+      const plugin: Plugin<TestEvents> = { name: 'test', onUnsubscribe }
+
+      const bus = createEventBus<TestEvents>({ plugins: [plugin] })
+      bus.on('test:event', () => {})
+
+      const listeners = bus.getListeners('test:event')
+      const listenerId = listeners.get('test:event')?.[0]?.id
+      expect(listenerId).toBeDefined()
+
+      bus.off(listenerId!)
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(onUnsubscribe).toHaveBeenCalledOnce()
+    })
+
+    it('should call onUnsubscribe for each listener removed via offAll', async () => {
+      const onUnsubscribe = vi.fn()
+      const plugin: Plugin<TestEvents> = { name: 'test', onUnsubscribe }
+
+      const bus = createEventBus<TestEvents>({ plugins: [plugin] })
+      bus.on('test:event', () => {})
+      bus.on('test:event', () => {})
+
+      bus.offAll('test:event')
+
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(onUnsubscribe).toHaveBeenCalledTimes(2)
+    })
+
+    it('should call onBeforeEmit and onAfterEmit around emission', async () => {
+      const order: string[] = []
+      const plugin: Plugin<TestEvents> = {
+        name: 'test',
+        onBeforeEmit: () => {
+          order.push('before')
+        },
+        onAfterEmit: () => {
+          order.push('after')
+        },
+      }
+
+      const bus = createEventBus<TestEvents>({ plugins: [plugin] })
+      bus.on('test:event', () => {
+        order.push('handler')
+      })
+
+      await bus.emit('test:event', { message: 'test' })
+
+      expect(order).toEqual(['before', 'handler', 'after'])
+    })
+
+    it('should pass correct arguments to onAfterEmit', async () => {
+      const onAfterEmit = vi.fn()
+      const plugin: Plugin<TestEvents> = { name: 'test', onAfterEmit }
+
+      const bus = createEventBus<TestEvents>({ plugins: [plugin] })
+      bus.on('test:event', () => {})
+      bus.on('test:event', () => {})
+
+      await bus.emit('test:event', { message: 'test' })
+
+      expect(onAfterEmit).toHaveBeenCalledWith(
+        'test:event',
+        { message: 'test' },
+        expect.any(Number),
+        2,
+      )
+    })
+
+    it('should call onError when a handler throws', async () => {
+      const onError = vi.fn()
+      const plugin: Plugin<TestEvents> = { name: 'test', onError }
+
+      const bus = createEventBus<TestEvents>({ plugins: [plugin] })
+      const thrownError = new Error('handler failed')
+      bus.on('test:event', () => {
+        throw thrownError
+      })
+
+      await bus.emit('test:event', { message: 'test' })
+
+      expect(onError).toHaveBeenCalledWith(
+        'test:event',
+        { message: 'test' },
+        thrownError,
+        expect.any(Symbol),
+      )
+    })
+
+    it('should call onError when an async handler rejects', async () => {
+      const onError = vi.fn()
+      const plugin: Plugin<TestEvents> = { name: 'test', onError }
+
+      const bus = createEventBus<TestEvents>({ plugins: [plugin] })
+      const thrownError = new Error('async handler failed')
+      bus.on('test:event', async () => {
+        throw thrownError
+      })
+
+      await bus.emit('test:event', { message: 'test' })
+
+      expect(onError).toHaveBeenCalledWith(
+        'test:event',
+        { message: 'test' },
+        thrownError,
+        expect.any(Symbol),
+      )
+    })
+
+    it('should work with no plugins configured', async () => {
+      const bus = createEventBus<TestEvents>()
+      let received = false
+
+      bus.on('test:event', () => {
+        received = true
+      })
+
+      await bus.emit('test:event', { message: 'test' })
+
+      expect(received).toBe(true)
     })
   })
 })

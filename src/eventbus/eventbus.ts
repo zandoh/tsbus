@@ -6,14 +6,18 @@ import type {
   SubscribeOptions,
 } from '../listener-store/listener-store.types'
 import { createPatternMatcher } from '../pattern-matcher/pattern-matcher'
+import { createPluginManager } from '../plugin-manager/plugin-manager'
 import type { EventBus, EventBusConfig, EventMap } from './eventbus.types'
 
 export function createEventBus<TEventMap extends EventMap = EventMap>(
-  _config?: EventBusConfig<TEventMap>,
+  config?: EventBusConfig<TEventMap>,
 ): EventBus<TEventMap> {
   const patternMatcher = createPatternMatcher()
   const listenerStore = createListenerStore(patternMatcher)
   const handlerExecutor = createHandlerExecutor<TEventMap>()
+  const pluginManager = createPluginManager<TEventMap>(config?.plugins ?? [])
+
+  pluginManager.callHook('onInit')
 
   const subscribe = (
     pattern: string,
@@ -22,8 +26,11 @@ export function createEventBus<TEventMap extends EventMap = EventMap>(
   ): (() => void) => {
     const listenerId = listenerStore.add(pattern, handler, options)
 
+    pluginManager.callHook('onSubscribe', pattern, listenerId)
+
     return (): void => {
       listenerStore.remove(pattern, listenerId)
+      pluginManager.callHook('onUnsubscribe', pattern, listenerId)
     }
   }
 
@@ -57,9 +64,29 @@ export function createEventBus<TEventMap extends EventMap = EventMap>(
   ): Promise<void> => {
     const eventStr = String(event)
 
+    await pluginManager.callHook('onBeforeEmit', event, payload)
+
+    const startTime = Date.now()
     const matchingListeners = listenerStore.getMatching(eventStr)
 
-    const { listenersToRemove } = await handlerExecutor.execute(event, payload, matchingListeners)
+    const { listenersToRemove, errors } = await handlerExecutor.execute(
+      event,
+      payload,
+      matchingListeners,
+    )
+
+    const duration = Date.now() - startTime
+    await pluginManager.callHook(
+      'onAfterEmit',
+      event,
+      payload,
+      duration,
+      matchingListeners.length,
+    )
+
+    for (const { error, listenerId } of errors) {
+      await pluginManager.callHook('onError', event, payload, error, listenerId)
+    }
 
     // Remove once listeners
     for (const listenerId of listenersToRemove) {
@@ -68,11 +95,17 @@ export function createEventBus<TEventMap extends EventMap = EventMap>(
   }
 
   const off = (listenerId: symbol): void => {
-    listenerStore.removeById(listenerId)
+    const pattern = listenerStore.removeById(listenerId)
+    if (pattern) {
+      pluginManager.callHook('onUnsubscribe', pattern, listenerId)
+    }
   }
 
   const offAll = <K extends keyof TEventMap>(event?: K): void => {
-    listenerStore.removeAll(event ? String(event) : undefined)
+    const removed = listenerStore.removeAll(event ? String(event) : undefined)
+    for (const [pattern, listenerId] of removed) {
+      pluginManager.callHook('onUnsubscribe', pattern, listenerId)
+    }
   }
 
   const getListeners = (event?: string): ListenerMap => {
