@@ -1,79 +1,79 @@
 {
-	"name": "tsbus",
-	"version": "0.0.1",
-	"description": "Lightweight, type-safe EventBus built with web primitives",
-	"keywords": [
-		"emitter",
-		"event",
-		"eventbus",
-		"patterns",
-		"plugins",
-		"priority",
-		"pubsub",
-		"type-safe",
-		"typescript",
-		"wildcard"
-	],
-	"homepage": "https://github.com/zandoh/tsbus#readme",
-	"bugs": "https://github.com/zandoh/tsbus/issues",
-	"license": "MIT",
-	"author": "zandoh",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/zandoh/tsbus.git"
-	},
-	"files": [
-		"dist"
-	],
-	"type": "module",
-	"sideEffects": false,
-	"main": "./dist/index.cjs",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"import": {
-				"types": "./dist/index.d.ts",
-				"default": "./dist/index.js"
-			},
-			"require": {
-				"types": "./dist/index.d.cts",
-				"default": "./dist/index.cjs"
-			}
-		}
-	},
-	"scripts": {
-		"build": "tsup",
-		"dev": "tsup --watch",
-		"bump": "changeset",
-		"lint": "oxlint",
-		"lint:fix": "oxlint --fix",
-		"format": "oxfmt",
-		"format:check": "oxfmt --check",
-		"knip": "knip",
-		"check": "bun run lint && bun run format:check && bun run knip && bun run type-check",
-		"check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
-		"type-check": "tsc --noEmit",
-		"test": "vitest",
-		"bench": "vitest bench",
-		"release": "changeset version && bun run build && npm publish",
-		"release:dry": "changeset && changeset version && bun run build && npm publish --dry-run",
-		"prepare": "simple-git-hooks"
-	},
-	"devDependencies": {
-		"@arethetypeswrong/cli": "^0.17.2",
-		"@changesets/cli": "^2.27.11",
-		"eventemitter3": "^5.0.4",
-		"knip": "^5",
-		"mitt": "^3.0.1",
-		"oxfmt": "^0",
-		"oxlint": "^1",
-		"simple-git-hooks": "^2.11.1",
-		"tsup": "^8.5.0",
-		"typescript": "^5.7.2",
-		"vitest": "^2.1.8"
-	},
-	"simple-git-hooks": {
-		"pre-commit": "bun run check"
-	}
+  "name": "tsbus",
+  "version": "0.0.1",
+  "description": "Lightweight, type-safe EventBus built with web primitives",
+  "keywords": [
+    "emitter",
+    "event",
+    "eventbus",
+    "patterns",
+    "plugins",
+    "priority",
+    "pubsub",
+    "type-safe",
+    "typescript",
+    "wildcard"
+  ],
+  "homepage": "https://github.com/zandoh/tsbus#readme",
+  "bugs": "https://github.com/zandoh/tsbus/issues",
+  "license": "MIT",
+  "author": "zandoh",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zandoh/tsbus.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "bump": "changeset",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "knip": "knip",
+    "check": "bun run lint && bun run format:check && bun run knip && bun run type-check",
+    "check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "bench": "vitest bench",
+    "release": "changeset version && bun run build && npm publish",
+    "release:dry": "changeset && changeset version && bun run build && npm publish --dry-run",
+    "prepare": "simple-git-hooks"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.17.2",
+    "@changesets/cli": "^2.27.11",
+    "eventemitter3": "^5.0.4",
+    "knip": "^5",
+    "mitt": "^3.0.1",
+    "oxfmt": "^0",
+    "oxlint": "^1",
+    "simple-git-hooks": "^2.11.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "bun run check"
+  }
 }

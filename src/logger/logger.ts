@@ -3,7 +3,7 @@
  * Centralizes console usage for easier testing and customization
  * Can be replaced with custom implementations for different logging strategies
  */
-export interface Logger {
+interface Logger {
   /** Log error messages */
   error(message: string, ...args: unknown[]): void;
   /** Log warning messages */
