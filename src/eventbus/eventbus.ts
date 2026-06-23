@@ -105,6 +105,7 @@ export function createEventBus<TEventMap extends EventMap = EventMap>(
 				const result = listener.handler(payload);
 				if (result && typeof (result as PromiseLike<void>).then === "function") {
 					try {
+						// eslint-disable-next-line no-await-in-loop -- sequential execution preserves listener ordering guarantees
 						await result;
 						listener.executionCount++;
 						if (listener.once) {
@@ -147,6 +148,7 @@ export function createEventBus<TEventMap extends EventMap = EventMap>(
 				const result = listener.handler(payload);
 				if (result && typeof (result as PromiseLike<void>).then === "function") {
 					try {
+						// eslint-disable-next-line no-await-in-loop -- sequential execution preserves listener ordering guarantees and per-handler timing accuracy
 						await result;
 						if (trackStats) {
 							listener.totalDuration += Date.now() - handlerStart;
@@ -182,6 +184,7 @@ export function createEventBus<TEventMap extends EventMap = EventMap>(
 		await pluginManager!.callHook("onAfterEmit", event, payload, duration, matchingListeners.length);
 
 		for (const { error, listenerId } of errors) {
+			// eslint-disable-next-line no-await-in-loop -- errors are reported to plugins sequentially so handlers can take corrective action in order
 			await pluginManager!.callHook("onError", event, payload, error, listenerId);
 		}
 
