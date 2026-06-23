@@ -1,5 +1,5 @@
 {
-  "name": "tsbus",
+  "name": "@zandoh/tsbus",
   "version": "0.0.1",
   "description": "Lightweight, type-safe EventBus built with web primitives",
   "keywords": [
@@ -56,8 +56,8 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "bench": "vitest bench",
-    "release": "changeset version && bun run build && npm publish",
-    "release:dry": "changeset && changeset version && bun run build && npm publish --dry-run",
+    "release": "changeset version && bun run build && npm publish --access=public",
+    "release:dry": "changeset && changeset version && bun run build && npm publish --access=public --dry-run",
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {
