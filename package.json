@@ -1,6 +1,6 @@
 {
 	"name": "tsbus",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Lightweight, type-safe EventBus built with web primitives",
 	"keywords": [
 		"emitter",
@@ -56,6 +56,8 @@
 		"type-check": "tsc --noEmit",
 		"test": "vitest",
 		"bench": "vitest bench",
+		"release": "changeset version && bun run build && npm publish",
+		"release:dry": "changeset && changeset version && bun run build && npm publish --dry-run",
 		"prepare": "simple-git-hooks"
 	},
 	"devDependencies": {
