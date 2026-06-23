@@ -1,5 +1,5 @@
 {
-	"name": "@zandoh/ts-eventbus",
+	"name": "tsbus",
 	"version": "0.0.0",
 	"description": "Lightweight, type-safe EventBus built with web primitives",
 	"keywords": [
@@ -14,13 +14,13 @@
 		"typescript",
 		"wildcard"
 	],
-	"homepage": "https://github.com/zandoh/ts-eventbus#readme",
-	"bugs": "https://github.com/zandoh/ts-eventbus/issues",
+	"homepage": "https://github.com/zandoh/tsbus#readme",
+	"bugs": "https://github.com/zandoh/tsbus/issues",
 	"license": "MIT",
 	"author": "zandoh",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/zandoh/ts-eventbus.git"
+		"url": "git+https://github.com/zandoh/tsbus.git"
 	},
 	"files": [
 		"dist"

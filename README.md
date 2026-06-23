@@ -1,4 +1,4 @@
-# @zandoh/ts-eventbus
+# tsbus
 
 A lightweight, type-safe event bus for TypeScript applications. Built with zero dependencies and native web primitives.
 
@@ -15,13 +15,13 @@ A lightweight, type-safe event bus for TypeScript applications. Built with zero 
 ## Installation
 
 ```bash
-pnpm add @zandoh/ts-eventbus
+pnpm add tsbus
 ```
 
 ## Usage
 
 ```typescript
-import { createEventBus } from "@zandoh/ts-eventbus";
+import { createEventBus } from "tsbus";
 
 // Define your event types
 interface AppEvents {
@@ -159,7 +159,7 @@ const listeners = bus.getListeners("user:login");
 Extend EventBus functionality with lifecycle hooks:
 
 ```typescript
-import type { Plugin } from "@zandoh/ts-eventbus";
+import type { Plugin } from "tsbus";
 
 const loggingPlugin: Plugin<AppEvents> = {
   name: "logger",

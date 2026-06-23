@@ -1,1 +1,1 @@
-# @zandoh/ts-eventbus
+# tsbus

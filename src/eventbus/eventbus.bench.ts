@@ -25,7 +25,7 @@ describe("emit to 1 sync handler, no plugins, no wildcards", () => {
 
 	const fn = () => {};
 
-	bench("ts-eventbus", () => {
+	bench("tsbus", () => {
 		bus.emit("test:event", payload);
 	});
 
@@ -58,7 +58,7 @@ describe("emit to 10 sync handlers", () => {
 		ee3.on("test:event", () => {});
 	}
 
-	bench("ts-eventbus", () => {
+	bench("tsbus", () => {
 		bus.emit("test:event", payload);
 	});
 
@@ -75,7 +75,7 @@ describe("emit to 1 async handler", () => {
 	const bus = createEventBus<TestEvents>();
 	bus.on("test:event", async () => {});
 
-	bench("ts-eventbus", async () => {
+	bench("tsbus", async () => {
 		await bus.emit("test:event", payload);
 	});
 });
@@ -92,7 +92,7 @@ describe("emit with plugins", () => {
 	});
 	bus.on("test:event", () => {});
 
-	bench("ts-eventbus (with plugin)", () => {
+	bench("tsbus (with plugin)", () => {
 		bus.emit("test:event", payload);
 	});
 });
@@ -101,7 +101,7 @@ describe("emit with wildcard patterns", () => {
 	const bus = createEventBus<TestEvents>();
 	bus.onPattern("test:*", () => {});
 
-	bench("ts-eventbus (wildcard)", () => {
+	bench("tsbus (wildcard)", () => {
 		bus.emit("test:event", payload);
 	});
 });
@@ -114,7 +114,7 @@ describe("subscribe + unsubscribe cycle", () => {
 
 	const ee3 = new EventEmitter3();
 
-	bench("ts-eventbus", () => {
+	bench("tsbus", () => {
 		const unsub = bus.on("test:event", handler);
 		unsub();
 	});
