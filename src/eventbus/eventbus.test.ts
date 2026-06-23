@@ -298,6 +298,41 @@ describe("EventBus", () => {
     });
   });
 
+  describe("error handling", () => {
+    it("should continue executing remaining handlers after error", async () => {
+      const bus = createEventBus<TestEvents>();
+
+      const errorHandler = vi.fn(() => {
+        throw new Error("Handler error");
+      });
+      const successHandler = vi.fn();
+
+      bus.on("test:event", errorHandler);
+      bus.on("test:event", successHandler);
+
+      await bus.emit("test:event", { message: "test" });
+
+      expect(errorHandler).toHaveBeenCalled();
+      expect(successHandler).toHaveBeenCalled();
+    });
+
+    it("should not mark errored once-listeners for removal", async () => {
+      const bus = createEventBus<TestEvents>();
+
+      const errorHandler = vi.fn(() => {
+        throw new Error("Handler error");
+      });
+      bus.once("test:event", errorHandler);
+
+      await bus.emit("test:event", { message: "test" });
+
+      // The once-listener threw, so it should NOT have been removed
+      // Emit again — the handler should fire again
+      await bus.emit("test:event", { message: "test2" });
+      expect(errorHandler).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe("plugins", () => {
     it("should call onInit when EventBus is created", async () => {
       const onInit = vi.fn();

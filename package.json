@@ -55,12 +55,15 @@
 		"check-exports": "attw --pack . --ignore-rules=cjs-resolves-to-esm",
 		"type-check": "tsc --noEmit",
 		"test": "vitest",
+		"bench": "vitest bench",
 		"prepare": "simple-git-hooks"
 	},
 	"devDependencies": {
 		"@arethetypeswrong/cli": "^0.17.2",
 		"@changesets/cli": "^2.27.11",
+		"eventemitter3": "^5.0.4",
 		"knip": "^5",
+		"mitt": "^3.0.1",
 		"oxfmt": "^0",
 		"oxlint": "^1",
 		"simple-git-hooks": "^2.11.1",

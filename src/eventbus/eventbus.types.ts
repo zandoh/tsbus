@@ -24,6 +24,12 @@ export type EventMap = Record<string, unknown>;
 export interface EventBusConfig<TEventMap extends EventMap = EventMap> {
   /** Plugins to extend EventBus functionality with lifecycle hooks */
   plugins?: Plugin<TEventMap>[];
+  /**
+   * Enable per-handler duration tracking (default: false).
+   * When disabled, `avgDuration` in `getListeners()` returns 0.
+   * `executionCount` is always tracked regardless of this setting.
+   */
+  trackStats?: boolean;
 }
 
 /**

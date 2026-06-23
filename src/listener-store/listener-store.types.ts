@@ -15,7 +15,10 @@ export interface ListenerInfo {
   addedAt: number;
   /** Number of times this listener has been executed */
   executionCount: number;
-  /** Average execution duration in milliseconds */
+  /**
+   * Average execution duration in milliseconds.
+   * Returns 0 when `trackStats` is disabled in `EventBusConfig`.
+   */
   avgDuration: number;
 }
 
